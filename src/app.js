@@ -12,22 +12,24 @@ app.use(express.json());
 
 // Write POST endpoint for registering new user
 app.post('/api/v1/details', (req, res) => {
+  // Extract user details from request body
   const { name, mail, number } = req.body;
 
-  // Validation: Check if all required fields are present
+  // Validate user data
   if (!name || !mail || !number) {
     return res.status(400).json({
+      status: 'Error',
       message: 'Invalid user data'
     });
   }
 
-  // Generate a new id by incrementing the id of the last user
-  const lastUserId = userDetails.length > 0 ? userDetails[userDetails.length - 1].id : 0;
-  const newId = lastUserId + 1;
+  // Generate the ID for the new user
+  const lastUser = userDetails[userDetails.length - 1];
+  const newUserId = lastUser ? lastUser.id + 1 : 1;
 
   // Create the new user object
   const newUser = {
-    id: newId,
+    id: newUserId,
     name: name,
     mail: mail,
     number: number
@@ -36,17 +38,23 @@ app.post('/api/v1/details', (req, res) => {
   // Add the new user to the userDetails array
   userDetails.push(newUser);
 
-  // Prepare the response
-  const response = {
+  // Write the updated user details to the JSON file
+  // (You can replace this step with your specific file handling code)
+  // fs.writeFileSync('./data/userDetails.json', JSON.stringify(userDetails, null, 2));
+
+  res.status(201).json({
     status: 'Success',
     message: 'User registered successfully',
     data: {
-      newProduct: newUser
+      newUser: newUser
     }
-  };
-
-  res.status(201).json(response);
+  });
 });
+
+
+
+ 
+
 
 
 // GET endpoint for sending the details of users
